@@ -1,3 +1,5 @@
+#include "rclcpp/logging.hpp"
+#include "rclcpp/rate.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <nav_msgs/msg/odometry.hpp>
@@ -35,9 +37,9 @@ private:
     float prev_error;
     float integral;
 
-    float kp = 1.0, ki = 0.0, kd = 0.00;
+    float kp = 0.5, ki = 0.0125, kd = 0.0025;
     float max_linear_speed = 0.5;
-    float goal_tolerance = 0.05; 
+    float goal_tolerance = 0.04; 
 
     void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
         current_distance = msg->pose.pose.position.x;
@@ -59,13 +61,22 @@ private:
 
         // Create velocity command
         geometry_msgs::msg::Twist vel;
-        vel.linear.x = std::min(control_signal, max_linear_speed);
+        vel.linear.x = control_signal;
+
+        // vel.linear.x = std::min(control_signal, max_linear_speed);
 
         // Publish velocity command
         vel_pub->publish(vel);
 
         // Check if the goal is reached
         if (std::abs(error) < goal_tolerance) {
+            RCLCPP_INFO(rclcpp::get_logger("Distance controller"), "Goal %i is completed" , current_goal_index);
+            rclcpp::Rate r(1);
+            for(int i=0; i<2;i++){
+                vel.linear.x  = 0.0;
+                vel_pub->publish(vel);
+                r.sleep();
+            }
             // Move to the next goal
             current_goal_index++;
 
