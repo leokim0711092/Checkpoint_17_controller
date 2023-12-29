@@ -15,7 +15,7 @@ public:
             {3.07, -0.2},
             {5.10, 1.04}  
         };
-        current_goal_index = 0;
+        current_goal_index = 0;//
 
         // Publisher for velocity commands
         vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
