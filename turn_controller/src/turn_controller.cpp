@@ -11,9 +11,9 @@ public:
 
         // Set up waypoints
         points_goals = {
+            {5.10, 1.04}, 
             {1.40, -0.81},
-            {3.07, -0.2},
-            {5.10, 1.04}  
+            {3.959, -13.791}
         };
         current_goal_index = 0;//
 
